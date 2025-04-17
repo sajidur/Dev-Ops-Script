@@ -1,0 +1,16 @@
+user=teacher
+userpass=password123
+echo "Starting setup..."
+
+### Step 1: Create a user 'user' without password ###
+echo "Creating user '$user' without password..."
+sudo adduser --disabled-password --gecos "" $user
+
+# Set an empty password (optional)
+echo "$user:$userpass" | sudo chpasswd  # Optionally set password or leave it blank
+
+# Grant sudo privileges to 'user' without password prompt
+sudo usermod -aG sudo $user
+echo '$user ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/$user
+
+echo "User '@user' created and granted sudo access (without password prompt)."

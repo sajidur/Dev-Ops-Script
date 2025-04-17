@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# Define VNC Port (Change this if needed)
+VNC_PORT=5901  # Change this to your chosen VNC port
+
+### Step 2: Install Apache Web Server ###
+echo "Installing Apache web server..."
+sudo apt update -y
+sudo apt install apache2 -y
+
+# Start Apache and enable it to run on boot
+sudo service apache2 start
+sudo systemctl enable apache2 2>/dev/null || echo "systemctl not supported in WSL"
+
+# Set permissions for Apache to run under a restricted user
+sudo chown -R www-data:www-data /var/www/html
+sudo chmod -R 755 /var/www/html
+echo "Apache installed and running."
+
+### Step 3: Install and Fix SSH ###
+echo "Installing OpenSSH Server..."
+sudo apt install -y openssh-server
+
+# Ensure SSH host keys exist
+echo "Checking SSH host keys..."
+sudo ssh-keygen -A
+
+# Restart SSH service
+echo "Restarting SSH service..."
+sudo systemctl restart ssh
+
+# Verify SSH status
+sudo systemctl status ssh --no-pager
+
+### Step 4: Configure Firewall (UFW) ###
+echo "Setting up firewall (UFW)..."
+sudo apt install ufw -y  # Ensure UFW is installed
+
+# Allow necessary ports
+sudo ufw allow 80/tcp  # HTTP
+sudo ufw allow 22/tcp  # SSH
+sudo ufw allow $VNC_PORT/tcp  # VNC
+
+# Enable the firewall
+sudo ufw --force enable
+sudo ufw status verbose
+
+echo "Firewall configured: Allowed ports - HTTP(80), SSH(22), VNC($VNC_PORT)"
+
+### Final Status Check ###
+echo "Checking services..."
+sudo service apache2 status | grep "Active:"
+sudo service ssh status | grep "Active:"
+sudo ufw status
+
+echo "Setup complete! Apache and SSH are running, and security rules are in place."
