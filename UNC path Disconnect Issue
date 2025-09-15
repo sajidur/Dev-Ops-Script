@@ -1,0 +1,5 @@
+Snario: last few days i notice that sometime file download is missing. So need to configure my SMB keep alive
+Configure Windows to Keep SMB Sessions Alive
+net config server /autodisconnect:-1
+If you want a timeout, set minutes (e.g. net config server /autodisconnect:60 for 1 hour).
+net config server
