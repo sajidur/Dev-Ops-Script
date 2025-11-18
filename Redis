@@ -1,1 +1,2 @@
-
+Run redis server with protected mode no
+C:\Program Files\Redis>redis-server.exe protected-mode no
